@@ -1,32 +1,33 @@
-var mongoose = require ('mongoose');
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp');
+var mongoose = require('./db/mongoose');
 
-var Todo = mongoose.model('Todo',{
-    text:{
-        type: String
-    },
-    completed : {
-        type : Boolean
-    },
-    completedAt: {
-        type : Number
-    }
+var {Todo} = require('./model/todomodel');
+var {user} = require('./model/usermodel');
+
+var express = require('express');
+var bodyParser = require('body-parser');
+
+var app = express();
+
+app.use(bodyParser.json());
+app.post('/todos',(req, res)=>{
+
+    var newTodo = new Todo({
+        text:req.body.text
+    });
+    newTodo.save().then((result)=>{
+        res.send(result)
+    },(err)=>{
+        res.status(400).send(err);
+    });
+
 });
 
-var user = mongoose.model('user',{
-    username:{
-        type:String,
-        require:true,
-        minlength:1,
-    },
-    email :{
-        type:String,
-        require:true,
-        minlengt:1,
-        trim:true
-    }
-})
+
+
+app.listen(3000,()=>{
+    console.log('server started on port 3000');
+});
+
 // var newTodo = new Todo({
 //     text:'cook Dinner'
 // });
@@ -48,13 +49,13 @@ var user = mongoose.model('user',{
 //     console.log('data not saved');
 // });
 
-var newuser = new user({
-    username : 'parvese',
-    email:'parvese@gmail.com'
-});
+// var newuser = new user({
+//     username : 'tom',
+//     email:'tom@gmail.com'
+// });
 
-newuser.save().then((result)=>{
-    console.log ('saved new user',result);
-},(e)=>{
-    console.log('user not saved');
-});
+// newuser.save().then((result)=>{
+//     console.log ('saved new user',result);
+// },(e)=>{
+//     console.log('user not saved');
+// });
