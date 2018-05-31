@@ -59,3 +59,5 @@ app.listen(3000,()=>{
 // },(e)=>{
 //     console.log('user not saved');
 // });
+
+module.exports.app=app;
