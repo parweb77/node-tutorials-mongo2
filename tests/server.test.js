@@ -2,7 +2,7 @@ const expect = require('expect');
 const request = require('supertest');
 var {ObjectID}=require('mongodb');
 
-const {app}=require('./../server');
+const {app}=require('./../server/server');
 const {Todo} = require('./../model/todomodel');
 
 const todo = [
@@ -113,22 +113,22 @@ describe('Testing GET todo/id', ()=>{
     it('should return invalid object id', (done)=>{
         //var invalid_id = todo1._id+1;
         request(app)
-        .get('/todos/5b112259473eed2360674a7b')
-        .expect(400)
-        .expect((res)=>{
-            expect(res.body.error).toBe('ID not found')
-        })
-        .end(done);
+            .get('/todos/5b112259473eed2360674a7b')
+            .expect(400)
+            .expect((res)=>{
+                expect(res.body.error).toBe('ID not found')
+            })
+            .end(done);
     });
 
     it('should return invalid object id', (done)=>{
         //var invalid_id = todo1._id+1;
         request(app)
-        .get('/todos/123')
-        .expect(404)
-        .expect((res)=>{
-            expect(res.body.error).toBe('Invalid Object ID')
-        })
-        .end(done);
+            .get('/todos/123')
+            .expect(404)
+            .expect((res)=>{
+                expect(res.body.error).toBe('Invalid Object ID')
+            })
+            .end(done);
     });
 });
