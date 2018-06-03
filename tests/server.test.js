@@ -132,3 +132,27 @@ describe('Testing GET todo/id', ()=>{
             .end(done);
     });
 });
+
+
+describe('Testing GET todo/id', ()=>{
+
+    it('should delete doc',()=>{
+        request(app)
+            .delete('/todos/5b112259473eed2360674a7a')
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.error).toBe('document not deleted')
+            })
+            .end((err, res)=>{
+                if(err)
+                    return done(err);
+                id = new ObjectID('5b112259473eed2360674a7a');
+                Todo.findById(id).then((doc)=>{
+                    expect(doc).toNotExist();
+                    done();
+                }).catch((e)=>done(e))
+            });
+
+    });
+
+});

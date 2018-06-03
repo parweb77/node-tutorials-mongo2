@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var mongoose = require('./../db/mongoose');
 var {ObjectID} = require('mongodb');
 var {Todo} = require('./../model/todomodel');
@@ -56,20 +57,78 @@ app.get('/todos/:ids', (req, res)=>{
     })
 });
 
+app.delete('/todos/:id',(req, res)=>{
 
+    var _id = req.params.id;
+    if(!ObjectID.isValid(_id))
+        res.status(404).send({error:"ID is invalid. document not deleted"});
+    Todo.findOneAndDelete({_id}).then((todo)=>{
+        if(todo)
+            res.status(200).send(todo);
+        else{
+            res.status(400).send({error:"document not deleted"});
 
+        }
+         
 
+    })
+});
 
-    // const todo = [{text:'my first todo'},
-    //         {text:'my second to do'}];
-    // Todo.insertMany(todo) 
-    // .then(()=>console.log('data inserted'));
+app.patch('/todos/:id',(req, res)=>{
 
+    id=req.params.id;
+   if(!ObjectID.isValid(id)) 
+        res.status(400).send({id:id, error:"invalid ID"});
+    
+    var body = _.pick(req.body,['text','completed']);
 
+    if (_.isBoolean(body.completed) && body.completed)
+        body.completedAt = new Date().getTime();
+    else {
+        body.completedAt = null;
+        body.completed = false;
+    }
+
+    Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
+        if(!todo)
+            res.status(404).send({error:"todo Id not found"});
+        res.status(200).send(todo);
+
+    }).catch((e)=> {
+        res.status(404).send({error:"updated failed"});
+    })
+
+});
+
+app.post('/users',(req,res)=>{
+
+    var body = _.pick(req.body,['username','email','password'])
+    // body = {
+    //     username:'testuser',
+    //     email :'test@gmail.com',
+    //     password:'1234567'
+    // }
+    var newUser = new user(body);
+    newUser.save().then((user)=>{
+       res.status(400).send({user});
+    //    console.log(user);
+    })
+    .catch((error)=>{
+       res.status(400).send({error})
+    //    console.log(error);
+    })
+
+})
 
 app.listen(port,()=>{
     console.log(`server started on port ${port}`);
 });
+
+module.exports.app=app;
+
+
+
+
 
 // var newTodo = new Todo({
 //     text:'cook Dinner'
@@ -102,5 +161,3 @@ app.listen(port,()=>{
 // },(e)=>{
 //     console.log('user not saved');
 // });
-
-module.exports.app=app;
